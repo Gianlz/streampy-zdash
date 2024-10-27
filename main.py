@@ -4,7 +4,13 @@ from components.login import exibir_login
 from components.sidebar import menu_com_redirecionamento
 
 def main():
-    inicializar_admin()
+    # Inicialização do estado da sessão
+    if 'usuarios' not in st.session_state:
+        st.session_state.usuarios = {}
+        
+    for key in ['autenticado', 'usuario', 'admin', 'pagina']:
+        if key not in st.session_state:
+            st.session_state[key] = False if key != 'pagina' else 'dashboard'
 
     st.set_page_config(
         page_title="Meu Aplicativo Streamlit",
@@ -13,10 +19,7 @@ def main():
         initial_sidebar_state="collapsed"
     )
 
-    # Inicialização do estado da sessão
-    for key in ['autenticado', 'usuario', 'admin', 'pagina']:
-        if key not in st.session_state:
-            st.session_state[key] = False if key != 'pagina' else 'dashboard'
+    inicializar_admin()
 
     if not st.session_state.autenticado:
         st.markdown("""
