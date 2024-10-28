@@ -37,7 +37,7 @@ def exibir_login():
                     st.error("As senhas não coincidem")
                 elif novo_usuario == "StrongerFX":
                     st.error("Este nome de usuário não está disponível")
-                elif verificar_credenciais(novo_usuario, nova_senha)[0]:
+                elif verificar_credenciais(novo_usuario, "")[0]:
                     st.error("Este usuário já existe!")
                 else:
                     salvar_usuario(novo_usuario, nova_senha)
