@@ -35,10 +35,12 @@ def admin_panel():
             
             col1, col2, col3, col4 = st.columns([1,1,1,1])
             with col1:
-                if st.button("✏️ Editar", key=f"edit_{usuario}", use_container_width=True):
-                    st.session_state.usuario_editando = usuario
-                    st.session_state.novo_nome = usuario
-                    st.session_state.novo_admin = dados.get('admin', False)
+                # Modifica o botão de editar para aparecer apenas se for o próprio StrongerFX logado
+                if (usuario == "StrongerFX" and st.session_state.get('usuario') == "StrongerFX") or (usuario != "StrongerFX"):
+                    if st.button("✏️ Editar", key=f"edit_{usuario}", use_container_width=True):
+                        st.session_state.usuario_editando = usuario
+                        st.session_state.novo_nome = usuario
+                        st.session_state.novo_admin = dados.get('admin', False)
             
             with col2:
                 if usuario != "StrongerFX":
@@ -49,16 +51,20 @@ def admin_panel():
                         st.rerun()
             
             with col3:
-                if st.button("🔑 Senha", key=f"pass_{usuario}", use_container_width=True):
-                    st.session_state.alterando_senha = usuario
+                # Modifica o botão de senha para aparecer apenas se for o próprio StrongerFX logado
+                if (usuario == "StrongerFX" and st.session_state.get('usuario') == "StrongerFX") or (usuario != "StrongerFX"):
+                    if st.button("🔑 Senha", key=f"pass_{usuario}", use_container_width=True):
+                        st.session_state.alterando_senha = usuario
 
             with col4:
-                if st.button("👤 Entrar", key=f"login_{usuario}", use_container_width=True):
-                    st.session_state.autenticado = True
-                    st.session_state.usuario = usuario
-                    st.session_state.admin = dados.get('admin', False)
-                    st.success(f"Você entrou na conta de {usuario}")
-                    st.rerun()
+                # Modifica o botão de entrar para aparecer apenas se for o próprio StrongerFX logado
+                if (usuario == "StrongerFX" and st.session_state.get('usuario') == "StrongerFX") or (usuario != "StrongerFX"):
+                    if st.button("👤 Entrar", key=f"login_{usuario}", use_container_width=True):
+                        st.session_state.autenticado = True
+                        st.session_state.usuario = usuario
+                        st.session_state.admin = dados.get('admin', False)
+                        st.success(f"Você entrou na conta de {usuario}")
+                        st.rerun()
             
             st.divider()
 
@@ -78,22 +84,28 @@ def admin_panel():
                 st.rerun()
 
     if 'alterando_senha' in st.session_state:
-        with st.form(key="password_form"):
-            st.subheader(f"Alterando senha: {st.session_state.alterando_senha}")
-            nova_senha = st.text_input("Nova senha", type="password")
-            confirmar_senha = st.text_input("Confirmar nova senha", type="password")
-            
-            if st.form_submit_button("Alterar senha", use_container_width=True):
-                if nova_senha == confirmar_senha:
-                    salt = bcrypt.gensalt()
-                    senha_hash = bcrypt.hashpw(nova_senha.encode('utf-8'), salt)
-                    usuarios[st.session_state.alterando_senha]['senha'] = senha_hash.decode('utf-8')
-                    salvar_usuarios(usuarios)
-                    del st.session_state.alterando_senha
-                    st.success("Senha alterada com sucesso!")
-                    st.rerun()
-                else:
-                    st.error("As senhas não coincidem!")
+        # Adiciona verificação antes de mostrar o formulário de alteração de senha
+        if st.session_state.alterando_senha == "StrongerFX" and st.session_state.get('usuario') != "StrongerFX":
+            st.error("Apenas o usuário StrongerFX pode alterar sua própria senha!")
+            del st.session_state.alterando_senha
+            st.rerun()
+        else:
+            with st.form(key="password_form"):
+                st.subheader(f"Alterando senha: {st.session_state.alterando_senha}")
+                nova_senha = st.text_input("Nova senha", type="password")
+                confirmar_senha = st.text_input("Confirmar nova senha", type="password")
+                
+                if st.form_submit_button("Alterar senha", use_container_width=True):
+                    if nova_senha == confirmar_senha:
+                        salt = bcrypt.gensalt()
+                        senha_hash = bcrypt.hashpw(nova_senha.encode('utf-8'), salt)
+                        usuarios[st.session_state.alterando_senha]['senha'] = senha_hash.decode('utf-8')
+                        salvar_usuarios(usuarios)
+                        del st.session_state.alterando_senha
+                        st.success("Senha alterada com sucesso!")
+                        st.rerun()
+                    else:
+                        st.error("As senhas não coincidem!")
 
     st.divider()
     with st.expander("Adicionar Novo Usuário", expanded=False):
