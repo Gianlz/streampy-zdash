@@ -57,7 +57,7 @@ def main():
             
             ⏰ **Controle de Horários**: Defina horários específicos para cada tarefa
             
-            📊 **Estatísticas**: Acompanhe seu progresso com métricas de conclusão
+            📊 **Estatísticas**: Acompanhe seu progresso com métricas de conclusão com gráficos
             
             👥 **Multi-usuário**: Sistema seguro com login individual
             """)
